@@ -45,9 +45,22 @@ if ingredients_list:
         st.success("✅ Your Smoothie is ordered, " + name_on_order + "!")
 
 import requests
-smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
-st.write(f"Status code: {smoothiefroot_response.status_code}")
+# smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
+# st.write(f"Status code: {smoothiefroot_response.status_code}")
 # st.text(smoothiefroot_response.json())
 # sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
+
+if smoothiefroot_response.status_code == 200:
+    try:
+        data = smoothiefroot_response.json()
+        st.dataframe(data, use_container_width=True)
+    except requests.exceptions.JSONDecodeError:
+        st.error("The API returned invalid JSON.")
+        st.text(smoothiefroot_response.text)
+elif smoothiefroot_response.status_code == 504:
+    st.error("The API timed out (504 Gateway Timeout). Please try again later.")
+else:
+    st.error(f"API request failed with status code {smoothiefroot_response.status_code}")
+    st.text(smoothiefroot_response.text)
 
 
